@@ -157,6 +157,7 @@ func (r *Reconciler) createAppWrapper(ctx context.Context, pipelineRun *tektonv1
 	for k, v := range requests {
 		resourceRequests[k] = v
 	}
+	resourceRequests["tekton.dev/pipelinerun"] = "1"
 
 	// Add appwrapper field with PodTemplateSpec
 	appwrapperField := map[string]interface{}{

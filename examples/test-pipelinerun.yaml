@@ -1,0 +1,27 @@
+apiVersion: tekton.dev/v1
+kind: PipelineRun
+metadata:
+  name: test-pipelinerun
+  namespace: default
+  annotations:
+    kueue.tekton.dev/requests-cpu: "500m"
+    kueue.tekton.dev/requests-memory: "1Gi"
+    kueue.tekton.dev/requests-storage: "10Gi"
+spec:
+  pipelineSpec:
+    tasks:
+      - name: echo-task
+        taskSpec:
+          steps:
+            - name: echo
+              image: ubuntu
+              script: |
+                #!/usr/bin/env bash
+                echo "Hello from Tekton AppWrapper!"
+                echo "This PipelineRun will be wrapped in an AppWrapper"
+                echo "Resource requests:"
+                echo "  CPU: 500m"
+                echo "  Memory: 1Gi"
+                echo "  Storage: 10Gi"
+                sleep 30
+                echo "Task completed!" 

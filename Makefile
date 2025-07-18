@@ -2,9 +2,9 @@
 
 # Variables
 REGISTRY ?= ko.local
-IMAGE_NAME ?= tekton-appwrapper
+IMAGE_NAME ?= tekton-appwrapper-controller
 VERSION ?= v0.1.0
-NAMESPACE ?= tekton-appwrapper-system
+NAMESPACE ?= tekton-pipelines
 
 # Go variables
 GOOS ?= linux
@@ -20,7 +20,7 @@ help: ## Display this help
 
 .PHONY: build
 build: ## Build the controller binary
-	CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/controller ./cmd/main.go
+	CGO_ENABLED=$(CGO_ENABLED) GOOS=$(GOOS) GOARCH=$(GOARCH) go build -o bin/controller ./cmd/controller/main.go
 
 .PHONY: test
 test: ## Run tests
@@ -48,11 +48,11 @@ tidy: ## Tidy go modules
 
 .PHONY: ko-build
 ko-build: ## Build container image with ko
-	ko build --local ./cmd/main.go
+	ko build --local ./cmd/controller/
 
 .PHONY: ko-publish
 ko-publish: ## Build and publish container image with ko
-	ko build --push ./cmd/main.go
+	ko build --push ./cmd/controller/
 
 .PHONY: ko-apply
 ko-apply: ## Build and apply manifests with ko
@@ -96,11 +96,11 @@ dev-cleanup: ## Cleanup development environment
 
 .PHONY: logs
 logs: ## Get controller logs
-	kubectl logs -n $(NAMESPACE) -l app.kubernetes.io/name=tekton-appwrapper -f
+	kubectl logs -n $(NAMESPACE) -l app=tekton-appwrapper-controller -f
 
 .PHONY: status
 status: ## Check controller status
-	kubectl get pods -n $(NAMESPACE) -l app.kubernetes.io/name=tekton-appwrapper
+	kubectl get pods -n $(NAMESPACE) -l app=tekton-appwrapper-controller
 	kubectl get appwrappers -A
 
 ##@ Release
@@ -114,4 +114,4 @@ release: ## Create a release
 .PHONY: clean
 clean: ## Clean build artifacts
 	rm -rf bin/
-	rm -f coverage.out coverage.html 
+	rm -f coverage.out coverage.html
